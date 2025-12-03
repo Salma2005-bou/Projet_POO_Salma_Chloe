@@ -5,11 +5,15 @@ public:
 };
 class RegleConway : public Regle {
 public:
-    bool devraitEtreAppliquee(bool etatActuel,int voisinsVivants) override {
-        if (etatActuel) {
-            return (voisinsVivants == 2 || voisinsVivants == 3);
+        bool devraitEtreAppliquee(bool etatActuel,int voisinsVivants) override {
+    if (etatActuel) {
+        if (voisinsVivants < 2 || voisinsVivants > 3) {
+            return false; 
         } else {
-            return (voisinsVivants == 3);
+            return true;  
         }
+    } else {
+        return (voisinsVivants == 3); // vivante si exactement 3 voisins
     }
+}
 };
