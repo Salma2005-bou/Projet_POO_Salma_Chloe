@@ -2,7 +2,17 @@
 #include <iostream>
 using namespace std;
 
-class EtatCellule ;
+class EtatCellule {
+public:
+    virtual bool estVivante() = 0 ;
+};
+
+class EtatVivant : public EtatCellule {
+public:
+    bool estVivante() override {
+        return true;
+    }
+};
 
 class Cellule {
 private:
@@ -13,6 +23,11 @@ private:
 public:
     Cellule(int x, int y, EtatCellule* etatInitial) : x(x), y(y), etat(etatInitial), etatSuivant(nullptr) {} // crée une cellule à un point donné avec un état 1 ou 0
     
+    ~Cellule() {
+        delete etat;
+        delete etatSuivant;  
+    }
+
     bool estVivante() {
         return etat -> estVivante();
     }
@@ -22,6 +37,7 @@ public:
     }
 
     void appliquerEtatSuivant(){ // remplace etat par etatSuivant
+        delete etat;
         etat = etatSuivant;
         etatSuivant = nullptr;
     }
@@ -32,18 +48,6 @@ public:
 
     void setEtat(EtatCellule* nouvelEtat){ // change l'état de la cellule
         etat = nouvelEtat;
-    }
-};
-
-class EtatCellule {
-public:
-    virtual bool estVivante() = 0 ;
-};
-
-class EtatVivant : public EtatCellule {
-public:
-    bool estVivante() override {
-        return true;
     }
 };
 
