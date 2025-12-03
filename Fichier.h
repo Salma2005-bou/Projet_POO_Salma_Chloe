@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -58,7 +59,7 @@ public:
     bool sauvegarderMatrice(const string& nomFichier, const vector<vector<bool>>& matrice) {
         ofstream fichier(nomFichier);
         if (!fichier.is_open()) {
-            cerr << "Erreur lors de l'ouverture du fichier pour écriture : " << nomFichier << endl;
+            //cerr << "Erreur lors de l'ouverture du fichier pour écriture : " << nomFichier << endl;
             return false;
         }
 

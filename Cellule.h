@@ -1,27 +1,16 @@
 #pragma once
 #include <iostream>
 using namespace std;
-
-class EtatCellule {
-public:
-    virtual bool estVivante() = 0 ;
-};
-
-class EtatVivant : public EtatCellule {
-public:
-    bool estVivante() override {
-        return true;
-    }
-};
+#include "EtatCellule.h"
 
 class Cellule {
 private:
     int x;
     int y;
-    EtatCellule* etat; // vivant ou mort
-    EtatCellule* etatSuivant; // futur état
+    EtatCellule* etat; 
+    EtatCellule* etatSuivant;
 public:
-    Cellule(int x, int y, EtatCellule* etatInitial) : x(x), y(y), etat(etatInitial), etatSuivant(nullptr) {} // crée une cellule à un point donné avec un état 1 ou 0
+    Cellule(int x, int y, EtatCellule* etatInitial) : x(x), y(y), etat(etatInitial), etatSuivant(nullptr) {} 
     
     ~Cellule() {
         delete etat;
@@ -32,28 +21,21 @@ public:
         return etat -> estVivante();
     }
 
-    void setEtatSuivant(EtatCellule* x){ // définit le futur état de la cellule
+    void setEtatSuivant(EtatCellule* x){ 
         etatSuivant = x;
     }
 
-    void appliquerEtatSuivant(){ // remplace etat par etatSuivant
+    void appliquerEtatSuivant(){ 
         delete etat;
         etat = etatSuivant;
         etatSuivant = nullptr;
     }
 
-    EtatCellule* getEtat() { // objet qui représente l'état actuel
+    EtatCellule* getEtat() { 
         return this -> etat;
     }
 
-    void setEtat(EtatCellule* nouvelEtat){ // change l'état de la cellule
+    void setEtat(EtatCellule* nouvelEtat){ 
         etat = nouvelEtat;
-    }
-};
-
-class EtatMort : public EtatCellule {
-public:
-    bool estVivante() override {
-        return false;
     }
 };

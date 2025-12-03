@@ -1,3 +1,4 @@
+#pragma once
 #include "Grille.h"
 #include "Regle.h"
 #include "Afficheur.h"
@@ -9,6 +10,7 @@ class JeuDeLaVie {
         Regle* regle;
         Afficheur* afficheur;
         int nombreIterations;
+        int cpt;
     public:
         // Constructeur pour initialiser la grille, la règle et l'afficheur
         JeuDeLaVie(Grille* g, Regle* r, Afficheur* a) 
@@ -23,24 +25,26 @@ class JeuDeLaVie {
                 std::cerr << "Erreur lors de la lecture du fichier : " << nomFichier << std::endl;
             }
         }
+
         // executer le jeu en mode console
         void executer(int iterations) {
             for (int i = 0; i < iterations; ++i) {
+                cout << "Generation n°" << i << endl;
                 afficheur->afficher(grille);
+                sauvegarderGeneration(i);
                 grille->calculerGenerationSuivante();
                 grille->appliquerGenerationSuivante();
             }
         }
+
         // mode graphique
         void executerGraphique() {
             afficheur->afficher(grille);
+            return;
         }
-        // appliquer genration suivante
-        void appliquerGenerationSuivante() {
-            grille->calculerGenerationSuivante();
-            grille->appliquerGenerationSuivante();
-        }
-       
+
+
+
     // Sauvegarder la grille dans un fichier
     void sauvegarderDansFichier(const std::string& nomFichier) {
         Fichier fichier;
@@ -54,4 +58,11 @@ class JeuDeLaVie {
             std::cerr << "Erreur lors de la sauvegarde dans le fichier : " << nomFichier << std::endl;
         }
     }
+
+    void sauvegarderGeneration(int numero) {
+        string nom = "Etats/generation_" + to_string(numero) + ".txt";
+        cout << "Sauvegarde de : " << nom << endl;
+        sauvegarderDansFichier(nom);
+    }
+
 };
