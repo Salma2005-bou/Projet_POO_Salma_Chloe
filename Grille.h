@@ -11,68 +11,68 @@ using namespace std;
 
 class Grille {
 private:
-    vector<vector<Cellule*>> cellules; // représente l'ensemble des ccellules de la grille
-    Regle* regle;
+    vector<vector<Cellule*>> cellules; 
+    Regle* regle;             // La grille n'est PAS propriétaire de la règle !
     int largeur;
     int hauteur;
+
 public:
-    Grille (int l, int h, Regle* r) : largeur(l), hauteur(h), regle(r) {
-    cellules = vector<vector<Cellule*>> // création de la matrice de taille hauteur (lignes) x largeur (colonnes)
-              (hauteur, // matrice avec "hauteur" nbr de lignes
-              vector<Cellule*> (largeur, nullptr)); // largeur = le nombre de colonnes, contenant la valeur NULL
+    Grille(int l, int h, Regle* r) 
+        : largeur(l), hauteur(h), regle(r)
+    {
+        // Création de la matrice hauteur x largeur remplie de nullptr
+        cellules = vector<vector<Cellule*>>(
+            hauteur,
+            vector<Cellule*>(largeur, nullptr)
+        );
     }
-    
-    ~Grille() {
-        for (int i = 0; i < hauteur; i++){
-            for (int j = 0; j < largeur; j++){
+
+    virtual ~Grille() {
+        // Libérer toutes les cellules créées
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
                 delete cellules[i][j];
             }
         }
-        delete regle;        
+
+        
     }
 
-    int getLargeur(){
-        return this -> largeur;
+    int getLargeur() const { return largeur; }
+    int getHauteur() const { return hauteur; }
+
+    Cellule* getCellule(int i, int j) const {
+        return cellules[i][j];   // peut être nullptr si non initialisé
     }
 
-    int getHauteur() {
-        return this -> hauteur;
-    }
+    Regle* getRegle() const { return regle; }
 
-    Cellule* getCellule(int i, int j) { // retourne la cellule aux coordonnées x et y 
-        return this -> cellules[i][j];
-    }
-
-    Regle* getRegle(){
-        return this -> regle;
-    }
-
-    void initialiserDepuisMatrice (vector<vector<bool>> matrice) { //Remplit la grille à partir du fichier d'entrée
-       
-        for (int i = 0; i < hauteur ; i++) {
+    // Initialise la grille à partir de la matrice du fichier
+    void initialiserDepuisMatrice(const vector<vector<bool>>& matrice) {
+        for (int i = 0; i < hauteur; i++) {
             for (int j = 0; j < largeur; j++) {
 
-                // matrice initiale donnée dans le fichier 
-                bool etatDeLaCellule = matrice[i][j];
+                // Supprimer l'ancienne cellule si elle existe
+                if (cellules[i][j] != nullptr)
+                    delete cellules[i][j];
 
-                if (etatDeLaCellule){
-                    cellules[i][j] = new Cellule( j, i, new EtatVivant());
-                }
-            
-                else {
-                    cellules[i][j] = new Cellule( j, i, new EtatMort());
-                }
+                if (matrice[i][j]) 
+                    cellules[i][j] = new Cellule(j, i, new EtatVivant());
+                else
+                    cellules[i][j] = new Cellule(j, i, new EtatMort());
             }
         }
     }
 
-    virtual int compterVoisinsVivants(int x, int y) = 0 ; // retourne le nombre de voisins vivants autour d'une cellule
-    virtual void calculerGenerationSuivante() = 0 ; // parcourt la grille et calcule pour chaque cellules, leur prochain état (stocker dans etatSuivant)
+    // Méthodes abstraites
+    virtual int compterVoisinsVivants(int x, int y) = 0;
+    virtual void calculerGenerationSuivante() = 0;
 
+    // Applique l'étatSuivant après avoir calculé la génération suivante
     void appliquerGenerationSuivante() {
-        for (int i = 0 ; i < getHauteur() ; i++){
-            for (int j = 0 ; j < getLargeur() ; j++){
-                getCellule(i, j) -> appliquerEtatSuivant();
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+                cellules[i][j]->appliquerEtatSuivant();
             }
         }
     }

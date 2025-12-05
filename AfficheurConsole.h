@@ -6,18 +6,30 @@ using namespace std;
 #include "Grille.h"
 
 class AfficheurConsole : public Afficheur {
-    public:
-        void afficher ( Grille *grille ) override {
+public:
+
+    void afficher(Grille* grille, int nbIterations = -1) override {
+
+        int iteration = 0;
+
+        while (nbIterations == -1 || iteration < nbIterations) {
+
+            cout << "" << endl;
+            cout << "Iteration : " << iteration << endl;
+
             for (int i = 0; i < grille->getHauteur(); ++i) {
                 for (int j = 0; j < grille->getLargeur(); ++j) {
-                    if (grille -> getCellule(i,j) -> estVivante()) {
-                        std::cout << "O ";
-                    } else {
-                        std::cout << ". ";
-                    }
+                    cout << (grille->getCellule(i,j)->estVivante() ? "O " : ". ");
                 }
-                std::cout << std::endl;
+                cout << endl;
             }
+
+            grille->calculerGenerationSuivante();
+            grille->appliquerGenerationSuivante();
+
+            iteration++;
         }
-        ~AfficheurConsole() override {}
+    }
+
+    ~AfficheurConsole() override {}
 };

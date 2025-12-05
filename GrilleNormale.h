@@ -4,71 +4,50 @@
 class GrilleNormale : public Grille {
 public:
 
-    GrilleNormale(int l, int h, Regle* r) : Grille(l, h, r) {}
+    GrilleNormale(int l, int h, Regle* r)
+        : Grille(l, h, r) {}
 
-    int compterVoisinsVivants(int i, int j) override { 
+    // --- Compte les voisins vivants ---
+    int compterVoisinsVivants(int i, int j) override {
 
-        map <Cellule*, bool> Voisins ;
+        static const int dx[8] = {-1,-1,-1, 0, 0, 1, 1, 1};
+        static const int dy[8] = {-1, 0, 1,-1, 1,-1, 0, 1};
 
-        // insertion dans la liste, de l'ensemble des voisins à une cellule donnée
-
-        // Les 3 cases du haut
-        if (i-1 >= 0 && j-1 >= 0) {
-            Voisins.insert({getCellule(i-1,j-1), getCellule(i-1, j-1) -> estVivante() });}
-        if (i-1 >= 0) {
-            Voisins.insert({getCellule(i-1,j), getCellule(i-1, j) -> estVivante() });}
-        if (i-1 >=0 && j+1 < getLargeur()) {
-            Voisins.insert({getCellule(i-1,j+1), getCellule(i-1, j+1) -> estVivante() });}
-
-
-        // Les 2 cases des côtés
-        if (j-1 >= 0) {
-            Voisins.insert({getCellule(i,j-1), getCellule(i, j-1) -> estVivante() });}
-        if (j+1 < getLargeur()){
-            Voisins.insert({getCellule(i,j+1), getCellule(i, j+1) -> estVivante() });}
-
-        // Les 3 cases d'en dessous
-        if (i+1 < getHauteur() && j-1 >= 0) {
-            Voisins.insert({getCellule(i+1,j-1), getCellule(i+1, j-1) -> estVivante() });}
-        if (i+1 < getHauteur()) {
-            Voisins.insert({getCellule(i+1,j), getCellule(i+1, j) -> estVivante() });}
-        if (i+1 < getHauteur() && j+1 < getLargeur()) {
-            Voisins.insert({getCellule(i+1,j+1), getCellule(i+1, j+1) -> estVivante() });}
-
-        // Recherche du nombre de voisins vivants
         int cpt = 0;
 
-        for (auto& l : Voisins) {
-            if (l.second){
-                cpt++;
+        for (int k = 0; k < 8; k++) {
+            int ni = i + dx[k];
+            int nj = j + dy[k];
+
+            if (ni >= 0 && ni < getHauteur() &&
+                nj >= 0 && nj < getLargeur()) {
+
+                Cellule* c = getCellule(ni, nj);
+                if (c && c->estVivante())
+                    cpt++;
             }
         }
+
         return cpt;
     }
 
-    void calculerGenerationSuivante() override { 
-        for (int i = 0; i < getHauteur(); i++){
-            for (int j = 0; j < getLargeur(); j++){
+    // --- Calcul de la génération suivante ---
+    void calculerGenerationSuivante() override {
 
-                int nb_voisin = compterVoisinsVivants(i, j);
-                EtatCellule* etatFutur = getRegle() -> devraitEtreAppliquee(getCellule(i, j) -> getEtat(), nb_voisin);
+        for (int i = 0; i < getHauteur(); i++) {
+            for (int j = 0; j < getLargeur(); j++) {
 
-                Cellule* cellule = getCellule(i,j);
-                cellule -> setEtatSuivant(etatFutur);
+                Cellule* cellule = getCellule(i, j);
+
+                if (!cellule) continue;
+
+                int nb_voisins = compterVoisinsVivants(i, j);
+
+                EtatCellule* futur =
+                    getRegle()->devraitEtreAppliquee(cellule->getEtat(), nb_voisins);
+
+                cellule->setEtatSuivant(futur);
             }
         }
     }
 };
-
-/*
-class GrilleTorique : public Grille {
-public :
-    int compterVoisinsVivants(int x, int y) override {
-
-    }
-
-    void calculerGenerationSuivante() override {
-
-    }
-};
-*/
